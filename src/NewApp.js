@@ -2,79 +2,41 @@ import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
-function App() {
+function NewApp() {
   const [file, setFile] = useState(null);
   const [columnData, setColumnData] = useState([]);
-  const [isComplete, setIsComplete] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
 
   const [requiredData, setRequiredData] = useState([]);
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
 
-  //   const fetchDataFromUrls = async () => {
-  //     const updatedColumnData = [];
-
-  //     for (const url of columnData) {
-  //       try {
-  //         if (url) {
-  //           let SECRET_KEY = "UX8BMIBN";
-
-  //           let paramQuery = `domain=${url}'&isOrganic=true&r=2&api_key=${SECRET_KEY}`;
-
-  //           const response = await fetch(
-  //             `https://www.spyfu.com/apis/core_api/get_domain_competitors_us?${paramQuery}`
-  //           );
-  //           const competitorsData = await response.json();
-  //           getData(competitorsData, url);
-  //           console.log(competitorsData, "competitorsData");
-  //         }
-  //       } catch (error) {
-  //         console.error(`Error fetching domain for ${url}:`, error);
-  //         updatedColumnData.push("Error fetching domain");
-  //       }
-  //     }
-
-  //     console.log("Domain data:", updatedColumnData);
-  //     setIsComplete(true);
-  //   };
-
   const fetchDataFromUrls = async () => {
     const updatedColumnData = [];
 
-    // Create an array to store all the promises from getData
-    const fetchPromises = columnData.map((url, index) => {
-      if (index) {
-        getDataFromUrl(url);
+    for (const url of columnData) {
+      try {
+        if (url) {
+          let SECRET_KEY = "UX8BMIBN";
+
+          let paramQuery = `domain=${url}'&isOrganic=true&r=2&api_key=${SECRET_KEY}`;
+
+          const response = await fetch(
+            `https://www.spyfu.com/apis/core_api/get_domain_competitors_us?${paramQuery}`
+          );
+          const competitorsData = await response.json();
+          getData(competitorsData, url);
+          console.log(competitorsData, "competitorsData");
+        }
+      } catch (error) {
+        console.error(`Error fetching domain for ${url}:`, error);
+        updatedColumnData.push("Error fetching domain");
       }
-    });
-
-    // Wait for all promises to resolve
-    await Promise.all(fetchPromises);
-
-    // Once all fetch operations are complete, update state and indicate completion
-    setIsComplete((data) => data + 1);
-  };
-
-  const getDataFromUrl = async (url) => {
-    console.log(url, "ppppppppp");
-    try {
-      if (url) {
-        let SECRET_KEY = "UX8BMIBN";
-
-        let paramQuery = `domain=${url}&isOrganic=true&r=2&api_key=${SECRET_KEY}`;
-
-        const response = await fetch(
-          `https://www.spyfu.com/apis/core_api/get_domain_competitors_us?${paramQuery}`
-        );
-        const competitorsData = await response.json();
-        getData(competitorsData, url);
-        console.log(competitorsData, "competitorsData");
-      }
-    } catch (error) {
-      console.error(`Error fetching domain for ${url}:`, error);
-      // Handle error if needed
     }
+
+    console.log("Domain data:", updatedColumnData);
+    setIsComplete(true);
   };
 
   const getData = async (aRows, url) => {
@@ -82,7 +44,7 @@ function App() {
 
     if (aRows) {
       let mainDomainData = {};
-      let mainSite = aRows[0]?.domainName;
+      let mainSite = aRows[0]["domainName"];
       if (mainSite) {
         let paramQuery = `domain=${mainSite}&api_key=${SECRET_KEY}`;
         const response = await fetch(
@@ -96,7 +58,7 @@ function App() {
 
       let aCometitor = [];
       for (let i = 1; i < aRows.length; i++) {
-        let mainSite = aRows[i]?.domainName;
+        let mainSite = aRows[i]["domainName"];
 
         if (mainSite) {
           let paramQuery = `domain=${mainSite}&api_key=${SECRET_KEY}`;
@@ -105,54 +67,37 @@ function App() {
           );
 
           let competitorDatas = await response.text();
-          console.log(competitorDatas, "competitorDatas");
           let competitorData = {};
           if (competitorDatas) {
             competitorData = await JSON?.parse(competitorDatas);
           }
-          if (
-            competitorData.organic_domain_ranking ||
-            competitorData.organic_domain_ranking === 0
-          ) {
-            const competitorObject = {
-              competitor_name: mainSite,
-              competitor_traffic: competitorData?.organic_clicks_per_month
-                ? competitorData?.organic_clicks_per_month
-                : 0,
-              competitor_organic_keywords: competitorData?.num_organic_keywords
-                ? competitorData?.num_organic_keywords
-                : 0,
-            };
 
-            aCometitor.push(competitorObject);
-            competitorData = {};
-            console.log(competitorData, "aCometitor");
-          }
+          const competitorObject = {
+            competitor_name: mainSite,
+            competitor_traffic: competitorData?.organic_clicks_per_month
+              ? competitorData?.organic_clicks_per_month
+              : 0,
+            competitor_organic_keywords: competitorData?.num_organic_keywords
+              ? competitorData?.num_organic_keywords
+              : 0,
+          };
+
+          aCometitor.push(competitorObject);
+          console.log(competitorData, "aCometitor");
         }
       }
       console.log(aCometitor, "aCometitor");
 
-      //   const competitorDataAry = aCometitor.reduce(
-      //     (a, b) => {
-      //       return a?.competitor_traffic > b?.competitor_traffic ? a : b;
-      //     },
-      //     {
-      //       competitor_traffic: 0,
-      //       competitor_organic_keywords: 0,
-      //       competitor_name: "Total",
-      //     }
-      //   );
-      const competitorDataAry = {
-        competitor_traffic: aCometitor[0]?.competitor_traffic
-          ? aCometitor[0]?.competitor_traffic
-          : 0,
-        competitor_organic_keywords: aCometitor[0]?.competitor_organic_keywords
-          ? aCometitor[0]?.competitor_organic_keywords
-          : 0,
-        competitor_name: aCometitor[0]?.competitor_name
-          ? aCometitor[0]?.competitor_name
-          : mainSite,
-      };
+      const competitorDataAry = aCometitor.reduce(
+        (a, b) => {
+          return a?.competitor_traffic > b?.competitor_traffic ? a : b;
+        },
+        {
+          competitor_traffic: 0,
+          competitor_organic_keywords: 0,
+          competitor_name: "Total",
+        }
+      );
 
       console.log(mainDomainData, "aCometitor");
 
@@ -231,16 +176,10 @@ function App() {
   return (
     <div>
       <input type="file" onChange={handleFileChange} />
-      <button
-        onClick={() => {
-          processData();
-        }}
-      >
-        Process Data
-      </button>
-      {isComplete === 2 && <button onClick={handleDownload}>Download</button>}
+      <button onClick={processData}>Process Data</button>
+      {isComplete && <button onClick={handleDownload}>Download</button>}
     </div>
   );
 }
 
-export default App;
+export default NewApp;

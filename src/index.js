@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import { store } from "./Redux/store";
 import Apps from "./Apps";
+import NewApp from "./NewApp";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -13,6 +14,7 @@ root.render(
     <Provider store={store}>
       {/* <App /> */}
       <Apps />
+      {/* <NewApp /> */}
     </Provider>
   </React.StrictMode>
 );
