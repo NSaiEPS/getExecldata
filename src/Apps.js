@@ -1,63 +1,31 @@
 import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { Button, Spin } from "antd";
+import { PoweroffOutlined } from "@ant-design/icons";
 
 function App() {
   const [file, setFile] = useState(null);
+  const [filenamae, setFileName] = useState("");
   const [columnData, setColumnData] = useState([]);
   const [isComplete, setIsComplete] = useState(0);
 
   const [requiredData, setRequiredData] = useState([]);
   const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+    const selectedFile = event.target.files[0];
+    setFile(selectedFile);
+    setFileName(selectedFile ? selectedFile.name : "");
   };
 
-  //   const fetchDataFromUrls = async () => {
-  //     const updatedColumnData = [];
-
-  //     for (const url of columnData) {
-  //       try {
-  //         if (url) {
-  //           let SECRET_KEY = "UX8BMIBN";
-
-  //           let paramQuery = `domain=${url}'&isOrganic=true&r=2&api_key=${SECRET_KEY}`;
-
-  //           const response = await fetch(
-  //             `https://www.spyfu.com/apis/core_api/get_domain_competitors_us?${paramQuery}`
-  //           );
-  //           const competitorsData = await response.json();
-  //           getData(competitorsData, url);
-  //           console.log(competitorsData, "competitorsData");
-  //         }
-  //       } catch (error) {
-  //         console.error(`Error fetching domain for ${url}:`, error);
-  //         updatedColumnData.push("Error fetching domain");
-  //       }
-  //     }
-
-  //     console.log("Domain data:", updatedColumnData);
-  //     setIsComplete(true);
-  //   };
-
   const fetchDataFromUrls = async () => {
-    const updatedColumnData = [];
+    const fetchPromises = columnData.map((url) => getDataFromUrl(url));
 
-    // Create an array to store all the promises from getData
-    const fetchPromises = columnData.map((url, index) => {
-      if (index) {
-        getDataFromUrl(url);
-      }
-    });
-
-    // Wait for all promises to resolve
     await Promise.all(fetchPromises);
 
-    // Once all fetch operations are complete, update state and indicate completion
     setIsComplete((data) => data + 1);
   };
 
   const getDataFromUrl = async (url) => {
-    console.log(url, "ppppppppp");
     try {
       if (url) {
         let SECRET_KEY = "UX8BMIBN";
@@ -73,7 +41,6 @@ function App() {
       }
     } catch (error) {
       console.error(`Error fetching domain for ${url}:`, error);
-      // Handle error if needed
     }
   };
 
@@ -132,16 +99,6 @@ function App() {
       }
       console.log(aCometitor, "aCometitor");
 
-      //   const competitorDataAry = aCometitor.reduce(
-      //     (a, b) => {
-      //       return a?.competitor_traffic > b?.competitor_traffic ? a : b;
-      //     },
-      //     {
-      //       competitor_traffic: 0,
-      //       competitor_organic_keywords: 0,
-      //       competitor_name: "Total",
-      //     }
-      //   );
       const competitorDataAry = {
         competitor_traffic: aCometitor[0]?.competitor_traffic
           ? aCometitor[0]?.competitor_traffic
@@ -177,25 +134,28 @@ function App() {
       alert("Please select a file");
       return;
     }
-
+    // setIsComplete(1);
     const reader = new FileReader();
 
     reader.onload = (event) => {
       const data = new Uint8Array(event.target.result);
       const workbook = XLSX.read(data, { type: "array" });
 
-      const sheetName = workbook.SheetNames[0]; // Assuming you want data from the first sheet
+      const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
+      //   setFileName(worksheet);
       const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
       if (rows.length > 0) {
-        // Extract data from the third column of each row
-        const columnData = rows.map((row) => row[3]); // Assuming zero-based indexing
+        const columnData = rows.map((row, index) => {
+          if (index) {
+            return row[3];
+          }
+        });
         console.log("Data from third column:", columnData);
         setColumnData(columnData);
 
-        // Fetch domain from each URL
-        fetchDataFromUrls();
+        // fetchDataFromUrls();
       } else {
         console.log("File does not contain any data");
       }
@@ -203,11 +163,17 @@ function App() {
 
     reader.readAsArrayBuffer(file);
   };
+
+  useEffect(() => {
+    if (columnData.length) {
+      fetchDataFromUrls();
+      setIsComplete((data) => data + 1);
+    }
+  }, [columnData]);
   console.log(requiredData, "requiredData");
 
   const convertToCSV = () => {
     const csvRows = [];
-    // Assuming data is an array of objects
     const headers = Object.keys(requiredData[0]);
     csvRows.push(headers.join(","));
 
@@ -229,17 +195,77 @@ function App() {
     saveAs(blob, "sampleData.csv");
   };
   return (
-    <div>
-      <input type="file" onChange={handleFileChange} />
-      <button
-        onClick={() => {
-          processData();
-        }}
-      >
-        Process Data
-      </button>
-      {isComplete === 2 && <button onClick={handleDownload}>Download</button>}
-    </div>
+    <>
+      {
+        <div
+          style={{ marginTop: "12px", display: "flex", alignItems: "center" }}
+        >
+          <div
+            style={{
+              width: "200px",
+              border: "1.5px solid #E8E8E8",
+              padding: "8px",
+              margin: "5px 5px",
+              borderRadius: "4px",
+            }}
+          >
+            <input
+              type="file"
+              style={{}}
+              name={"filenamae"}
+              onChange={handleFileChange}
+              //   placeholder="hio"
+            />
+          </div>
+          <button
+            style={{
+              width: "150px",
+              padding: "12px",
+              backgroundColor: "blue",
+              color: "white",
+              border: "none",
+              borderRadius: "5px",
+            }}
+            onClick={() => {
+              processData();
+            }}
+          >
+            Process Data
+          </button>
+
+          {isComplete === 2 ? (
+            <button
+              onClick={handleDownload}
+              style={{
+                width: "150px",
+                padding: "12px",
+                backgroundColor: "blue",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                marginLeft: "5px",
+              }}
+            >
+              Download
+            </button>
+          ) : null}
+
+          {/* <Button type="primary" icon={<PoweroffOutlined />} loading={true} /> */}
+        </div>
+      }
+      {isComplete === 1 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "25%",
+          }}
+        >
+          <Spin />
+        </div>
+      )}
+    </>
   );
 }
 
