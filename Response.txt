@@ -1,0 +1,55 @@
+   //     domain: Company name.'
+    // isOrganic: true
+    // r: 2
+    // api_key: 'UX8BMIBN
+
+    // commonKeywords
+    // : 
+    // 1
+    // domainId
+    // : 
+    // "-3509745851337693469"
+    // domainName
+    // : 
+    // "simcast.com"
+    // overlap
+    // : 
+    // 1.4000000000000001
+
+
+    No HTTP resource was found that matches the request URI 'http://www.spyfu.com/apis/core_api/get_domain_competitors_us?domain=simcast.com&api_key=UX8BMIBN'."
+
+
+avg_ad_position
+: 
+0
+daily_adwords_budget
+: 
+0
+daily_organic_traffic_value
+: 
+10
+monthly_adwords_budget
+: 
+0
+num_organic_keywords
+: 
+7
+num_paid_keywords
+: 
+0
+number_of_advertisers
+: 
+0
+organic_clicks_per_month
+: 
+15
+organic_domain_ranking
+: 
+4951459
+paid_clicks_per_month
+: 
+0
+paid_domain_ranking
+: 
+2147483647
