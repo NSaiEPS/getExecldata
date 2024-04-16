@@ -6,6 +6,7 @@ import { PoweroffOutlined } from "@ant-design/icons";
 import { InboxOutlined } from "@ant-design/icons";
 import Dragger from "antd/es/upload/Dragger";
 import drag from "./icons8-drag-and-drop-100.png";
+import { LoadingOutlined } from "@ant-design/icons";
 function App() {
   const [file, setFile] = useState(null);
   const [filenamae, setFileName] = useState("");
@@ -215,7 +216,7 @@ function App() {
       {
         <div
           style={{
-            marginTop: "12px",
+            marginTop: "54px",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -224,16 +225,25 @@ function App() {
         >
           <div
             style={{
-              width: "500px",
-              border: "1.5px solid #E8E8E8",
-              padding: "20px",
+              width: "800px",
+              border: "1px solid #C8C8C8",
+              //   padding: "4px",
               //   margin: "5px 5px",
               borderRadius: "4px",
-              backgroundColor: "#FFFFFF",
+              backgroundColor: "#f0f0f090",
             }}
           >
-            <span style={{ color: "#c8c8c8", fontWeight: 600 }}>
-              File Upload Preview{" "}
+            <span
+              style={{
+                color: "#000",
+                fontWeight: 600,
+                textAlign: "center",
+                fontSize: "32px",
+                display: "block",
+                marginBottom: "10px",
+              }}
+            >
+              SpyFu{" "}
             </span>
             {/* <Dragger
               onChange={(info) => handleFileChange(info.file)}
@@ -255,22 +265,47 @@ function App() {
             {/* </Dragger> */}
             <div
               style={{
-                width: "424px",
-                padding: "36px",
-                border: "1px dashed black",
-                marginTop: "4px",
-                backgroundColor: "#eaecf1",
+                borderTop: "1px solid #C8C8C8",
+                width: "800px",
+                borderBottom: "1px solid #C8C8C8",
+                // padding: "8px",
+                marginBottom: "16px",
+                // marginLeft: "1px",
+                backgroundColor: "#FFFFFF",
+                // borderRadius: "4px",
               }}
             >
-              <input
-                type="file"
-                style={{ opacity: 0 }}
-                name={"filenamae"}
-                ref={inputRef}
-                onChange={handleFileChange}
-                //   placeholder="hio"
-              />
+              <span
+                style={{
+                  display: "block",
+                  marginTop: "12px",
+                  marginLeft: "12px",
+                }}
+              >
+                {" "}
+                Choose CSV File
+              </span>
               <div
+                style={{
+                  width: "760px",
+                  padding: "10px",
+                  border: "1px solid #C8C8C8",
+                  marginTop: "6px",
+                  marginLeft: "10px",
+                  borderRadius: "4px",
+                  // backgroundColor: "#eaecf1",
+                }}
+              >
+                <input
+                  type="file"
+                  style={{ opacity: 1 }}
+                  name={"filenamae"}
+                  ref={inputRef}
+                  onChange={handleFileChange}
+                  //   placeholder="hio"
+                />
+
+                {/* <div
                 style={{
                   display: "flex",
                   justifyContent: "center",
@@ -280,8 +315,8 @@ function App() {
                 onClick={() => inputRef.current.click()}
               >
                 <img src={drag} alt="" width={50} height={50} />
-              </div>
-              <p
+              </div> */}
+                {/* <p
                 onClick={() => inputRef.current.click()}
                 style={{
                   textAlign: "center",
@@ -291,7 +326,47 @@ function App() {
                 }}
               >
                 <span>{filenamae ? filenamae : "Choose Your File"}</span>
-              </p>
+              </p> */}
+              </div>
+              <button
+                style={{
+                  width: "100px",
+                  padding: "12px",
+                  backgroundColor: `${isComplete === 1 ? "#c8c8c8" : "blue"}`,
+                  color: "white",
+                  border: "none",
+                  marginLeft: "10px",
+                  marginBottom: "16px",
+                  marginTop: "12px",
+                  borderRadius: "5px",
+                  cursor: `${isComplete === 1 ? "none" : "pointer"}`,
+                }}
+                //   disabled={isComplete === 1 ? true : false}
+                onClick={() => {
+                  if (isComplete !== 1) {
+                    processData();
+                  }
+                }}
+              >
+                Upload
+              </button>
+              {isComplete === 2 ? (
+                <button
+                  onClick={handleDownload}
+                  style={{
+                    width: "100px",
+                    padding: "12px",
+                    backgroundColor: "blue",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px",
+                    marginLeft: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Download
+                </button>
+              ) : null}
             </div>
           </div>
           <div
@@ -300,45 +375,7 @@ function App() {
               //   justifyContent: "start",
               marginTop: "12px",
             }}
-          >
-            <button
-              style={{
-                width: "150px",
-                padding: "12px",
-                backgroundColor: `${isComplete === 1 ? "#c8c8c8" : "blue"}`,
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: `${isComplete === 1 ? "none" : "pointer"}`,
-              }}
-              //   disabled={isComplete === 1 ? true : false}
-              onClick={() => {
-                if (isComplete !== 1) {
-                  processData();
-                }
-              }}
-            >
-              Process Data
-            </button>
-
-            {isComplete === 2 ? (
-              <button
-                onClick={handleDownload}
-                style={{
-                  width: "150px",
-                  padding: "12px",
-                  backgroundColor: "blue",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  marginLeft: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                Download
-              </button>
-            ) : null}
-          </div>
+          ></div>
           {/* <Button type="primary" icon={<PoweroffOutlined />} loading={true} /> */}
         </div>
       }
@@ -351,7 +388,17 @@ function App() {
             marginTop: "10%",
           }}
         >
-          <Spin />
+          {/* <Spin /> */}
+          <Spin
+            indicator={
+              <LoadingOutlined
+                style={{
+                  fontSize: 24,
+                }}
+                spin
+              />
+            }
+          />
         </div>
       )}
     </>
