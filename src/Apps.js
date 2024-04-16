@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { Button, Spin } from "antd";
 import { PoweroffOutlined } from "@ant-design/icons";
-
+import { InboxOutlined } from "@ant-design/icons";
+import Dragger from "antd/es/upload/Dragger";
+import drag from "./icons8-drag-and-drop-100.png";
 function App() {
   const [file, setFile] = useState(null);
   const [filenamae, setFileName] = useState("");
@@ -22,7 +24,9 @@ function App() {
 
     await Promise.all(fetchPromises);
 
-    setIsComplete((data) => data + 1);
+    setTimeout(() => {
+      setIsComplete((data) => data + 1);
+    }, 5000);
   };
 
   const getDataFromUrl = async (url) => {
@@ -134,7 +138,7 @@ function App() {
       alert("Please select a file");
       return;
     }
-    // setIsComplete(1);
+    setIsComplete(1);
     const reader = new FileReader();
 
     reader.onload = (event) => {
@@ -167,7 +171,6 @@ function App() {
   useEffect(() => {
     if (columnData.length) {
       fetchDataFromUrls();
-      setIsComplete((data) => data + 1);
     }
   }, [columnData]);
   console.log(requiredData, "requiredData");
@@ -194,62 +197,148 @@ function App() {
     const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
     saveAs(blob, "sampleData.csv");
   };
+
+  const props = {
+    name: "file",
+    multiple: true,
+    action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
+    onChange(info) {
+      const { status } = info.file;
+    },
+    onDrop(e) {
+      console.log("Dropped files", e.dataTransfer.files);
+    },
+  };
+  const inputRef = useRef(null);
   return (
     <>
       {
         <div
-          style={{ marginTop: "12px", display: "flex", alignItems: "center" }}
+          style={{
+            marginTop: "12px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
         >
           <div
             style={{
-              width: "200px",
+              width: "500px",
               border: "1.5px solid #E8E8E8",
-              padding: "8px",
-              margin: "5px 5px",
+              padding: "20px",
+              //   margin: "5px 5px",
               borderRadius: "4px",
+              backgroundColor: "#FFFFFF",
             }}
           >
-            <input
-              type="file"
-              style={{}}
-              name={"filenamae"}
-              onChange={handleFileChange}
-              //   placeholder="hio"
-            />
+            <span style={{ color: "#c8c8c8", fontWeight: 600 }}>
+              File Upload Preview{" "}
+            </span>
+            {/* <Dragger
+              onChange={(info) => handleFileChange(info.file)}
+              onDrop={(e) => handleFileChange(e.dataTransfer.files)}
+            >
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined />
+              </p>
+              <p className="ant-upload-text">
+                <span>
+                  Drag and drop or{" "}
+                  <span className="file-link">Choose your files</span>
+                </span>
+              </p> */}
+            {/* <p className="ant-upload-hint">
+                Support for a single or bulk upload. Strictly prohibited from
+                uploading company data 
+              </p> */}
+            {/* </Dragger> */}
+            <div
+              style={{
+                width: "424px",
+                padding: "36px",
+                border: "1px dashed black",
+                marginTop: "4px",
+                backgroundColor: "#eaecf1",
+              }}
+            >
+              <input
+                type="file"
+                style={{ opacity: 0 }}
+                name={"filenamae"}
+                ref={inputRef}
+                onChange={handleFileChange}
+                //   placeholder="hio"
+              />
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+                onClick={() => inputRef.current.click()}
+              >
+                <img src={drag} alt="" width={50} height={50} />
+              </div>
+              <p
+                onClick={() => inputRef.current.click()}
+                style={{
+                  textAlign: "center",
+                  textDecoration: "underline",
+                  color: "#475e7b",
+                  cursor: "pointer",
+                }}
+              >
+                <span>{filenamae ? filenamae : "Choose Your File"}</span>
+              </p>
+            </div>
           </div>
-          <button
+          <div
             style={{
-              width: "150px",
-              padding: "12px",
-              backgroundColor: "blue",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-            }}
-            onClick={() => {
-              processData();
+              display: "flex",
+              //   justifyContent: "start",
+              marginTop: "12px",
             }}
           >
-            Process Data
-          </button>
-
-          {isComplete === 2 ? (
             <button
-              onClick={handleDownload}
               style={{
                 width: "150px",
                 padding: "12px",
-                backgroundColor: "blue",
+                backgroundColor: `${isComplete === 1 ? "#c8c8c8" : "blue"}`,
                 color: "white",
                 border: "none",
                 borderRadius: "5px",
-                marginLeft: "5px",
+                cursor: `${isComplete === 1 ? "none" : "pointer"}`,
+              }}
+              //   disabled={isComplete === 1 ? true : false}
+              onClick={() => {
+                if (isComplete !== 1) {
+                  processData();
+                }
               }}
             >
-              Download
+              Process Data
             </button>
-          ) : null}
 
+            {isComplete === 2 ? (
+              <button
+                onClick={handleDownload}
+                style={{
+                  width: "150px",
+                  padding: "12px",
+                  backgroundColor: "blue",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  marginLeft: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                Download
+              </button>
+            ) : null}
+          </div>
           {/* <Button type="primary" icon={<PoweroffOutlined />} loading={true} /> */}
         </div>
       }
@@ -259,7 +348,7 @@ function App() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            marginTop: "25%",
+            marginTop: "10%",
           }}
         >
           <Spin />
