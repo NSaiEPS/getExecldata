@@ -1,23 +1,30 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { Button, Spin } from "antd";
-import { PoweroffOutlined } from "@ant-design/icons";
-import { InboxOutlined } from "@ant-design/icons";
-import Dragger from "antd/es/upload/Dragger";
-import drag from "./icons8-drag-and-drop-100.png";
+import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 function App() {
   const [file, setFile] = useState(null);
   const [filenamae, setFileName] = useState("");
   const [columnData, setColumnData] = useState([]);
   const [isComplete, setIsComplete] = useState(0);
+  const [showDownload, setShowDownload] = useState(false);
 
   const [requiredData, setRequiredData] = useState([]);
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
     setFileName(selectedFile ? selectedFile.name : "");
+  };
+
+  const timeout = useRef(null);
+
+  const onChangeHandler = (value) => {
+    clearTimeout(timeout.current);
+
+    timeout.current = setTimeout(() => {
+      setShowDownload(true);
+    }, 500);
   };
 
   const fetchDataFromUrls = async () => {
@@ -133,6 +140,7 @@ function App() {
   };
   const handleData = (data) => {
     setRequiredData((prevData) => [...prevData, data]);
+    onChangeHandler();
   };
   const processData = () => {
     if (!file) {
@@ -174,7 +182,6 @@ function App() {
       fetchDataFromUrls();
     }
   }, [columnData]);
-  console.log(requiredData, "requiredData");
 
   const convertToCSV = () => {
     const csvRows = [];
@@ -196,20 +203,9 @@ function App() {
   const handleDownload = () => {
     const csvData = convertToCSV();
     const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
-    saveAs(blob, "data.csv");
+    saveAs(blob, "data.xlsx");
   };
 
-  const props = {
-    name: "file",
-    multiple: true,
-    action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
-    onChange(info) {
-      const { status } = info.file;
-    },
-    onDrop(e) {
-      console.log("Dropped files", e.dataTransfer.files);
-    },
-  };
   const inputRef = useRef(null);
   return (
     <>
@@ -350,7 +346,7 @@ function App() {
               >
                 Upload
               </button>
-              {isComplete === 2 ? (
+              {isComplete === 2 && showDownload ? (
                 <button
                   onClick={handleDownload}
                   style={{
