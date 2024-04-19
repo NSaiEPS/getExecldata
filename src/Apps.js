@@ -196,7 +196,7 @@ function App() {
   const handleDownload = () => {
     const csvData = convertToCSV();
     const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
-    saveAs(blob, "sampleData.csv");
+    saveAs(blob, "data.csv");
   };
 
   const props = {
