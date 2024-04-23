@@ -143,6 +143,7 @@ function App() {
     onChangeHandler();
   };
   const processData = () => {
+    setRequiredData([]);
     if (!file) {
       alert("Please select a file");
       return;
