@@ -7,6 +7,7 @@ function App() {
   const [file, setFile] = useState(null);
   const [filenamae, setFileName] = useState("");
   const [columnData, setColumnData] = useState([]);
+  const [getFinalData, setGetFInalData] = useState([]);
   const [isComplete, setIsComplete] = useState(0);
   const [showDownload, setShowDownload] = useState(false);
 
@@ -21,10 +22,11 @@ function App() {
 
   const onChangeHandler = (value) => {
     clearTimeout(timeout.current);
+    setShowDownload(false);
 
     timeout.current = setTimeout(() => {
       setShowDownload(true);
-    }, 500);
+    }, 1500);
   };
 
   const fetchDataFromUrls = async () => {
@@ -57,6 +59,9 @@ function App() {
       console.error(`Error fetching domain for ${url}:`, error);
     }
   };
+
+  console.log(columnData.length, "pppppp");
+  console.log(requiredData.length, "pppppp");
 
   const getData = async (aRows, url, index) => {
     let SECRET_KEY = "UX8BMIBN";
@@ -193,6 +198,7 @@ function App() {
     csvRows.push(headers.join(","));
     // console.log(requiredData, "requiredData");
     const sortedDataCopy = [...requiredData];
+    setGetFInalData(requiredData);
     sortedDataCopy.sort((a, b) => a.No - b.No);
 
     for (const row of sortedDataCopy) {
@@ -354,7 +360,9 @@ function App() {
               >
                 Upload
               </button>
-              {isComplete === 2 && showDownload ? (
+              {isComplete === 2 &&
+              showDownload &&
+              requiredData.length + 1 === columnData.length ? (
                 <button
                   onClick={handleDownload}
                   style={{
@@ -383,7 +391,8 @@ function App() {
           {/* <Button type="primary" icon={<PoweroffOutlined />} loading={true} /> */}
         </div>
       }
-      {isComplete === 1 && (
+      {(isComplete === 1 || requiredData.length + 1 !== columnData.length) &&
+      requiredData.length ? (
         <div
           style={{
             display: "flex",
@@ -404,7 +413,7 @@ function App() {
             }
           />
         </div>
-      )}
+      ) : null}
     </>
   );
 }
