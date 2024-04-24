@@ -28,7 +28,9 @@ function App() {
   };
 
   const fetchDataFromUrls = async () => {
-    const fetchPromises = columnData.map((url) => getDataFromUrl(url));
+    const fetchPromises = columnData.map((url, index) =>
+      getDataFromUrl(url, index)
+    );
 
     await Promise.all(fetchPromises);
 
@@ -37,7 +39,7 @@ function App() {
     }, 5000);
   };
 
-  const getDataFromUrl = async (url) => {
+  const getDataFromUrl = async (url, index) => {
     try {
       if (url) {
         let SECRET_KEY = "UX8BMIBN";
@@ -48,15 +50,15 @@ function App() {
           `https://www.spyfu.com/apis/core_api/get_domain_competitors_us?${paramQuery}`
         );
         const competitorsData = await response.json();
-        getData(competitorsData, url);
-        console.log(competitorsData, "competitorsData");
+        getData(competitorsData, url, index);
+        // console.log(competitorsData, "competitorsData");
       }
     } catch (error) {
       console.error(`Error fetching domain for ${url}:`, error);
     }
   };
 
-  const getData = async (aRows, url) => {
+  const getData = async (aRows, url, index) => {
     let SECRET_KEY = "UX8BMIBN";
 
     if (aRows) {
@@ -84,7 +86,7 @@ function App() {
           );
 
           let competitorDatas = await response.text();
-          console.log(competitorDatas, "competitorDatas");
+          // console.log(competitorDatas, "competitorDatas");
           let competitorData = {};
           if (competitorDatas) {
             competitorData = await JSON?.parse(competitorDatas);
@@ -105,11 +107,11 @@ function App() {
 
             aCometitor.push(competitorObject);
             competitorData = {};
-            console.log(competitorData, "aCometitor");
+            // console.log(competitorData, "aCometitor");
           }
         }
       }
-      console.log(aCometitor, "aCometitor");
+      // console.log(aCometitor, "aCometitor");
 
       const competitorDataAry = {
         competitor_traffic: aCometitor[0]?.competitor_traffic
@@ -123,9 +125,10 @@ function App() {
           : mainSite,
       };
 
-      console.log(mainDomainData, "aCometitor");
+      // console.log(mainDomainData, "aCometitor");
 
       const aRecords = {
+        No: index,
         company_url: url,
         company_traffic: mainDomainData?.organic_clicks_per_month
           ? mainDomainData?.organic_clicks_per_month
@@ -166,7 +169,7 @@ function App() {
             return row[3];
           }
         });
-        console.log("Data from third column:", columnData);
+        // console.log("Data from third column:", columnData);
         setColumnData(columnData);
 
         // fetchDataFromUrls();
@@ -188,8 +191,11 @@ function App() {
     const csvRows = [];
     const headers = Object.keys(requiredData[0]);
     csvRows.push(headers.join(","));
+    // console.log(requiredData, "requiredData");
+    const sortedDataCopy = [...requiredData];
+    sortedDataCopy.sort((a, b) => a.No - b.No);
 
-    for (const row of requiredData) {
+    for (const row of sortedDataCopy) {
       const values = headers.map((header) => {
         const value = row[header] !== null ? row[header] : "_";
         const escaped = ("" + value).replace(/"/g, '\\"');
@@ -203,6 +209,7 @@ function App() {
 
   const handleDownload = () => {
     const csvData = convertToCSV();
+    // console.log(csvData, "csvData");
     const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
     saveAs(blob, "data.xlsx");
   };
