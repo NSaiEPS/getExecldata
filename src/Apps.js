@@ -392,7 +392,7 @@ function App() {
         </div>
       }
       {(isComplete === 1 || requiredData.length + 1 !== columnData.length) &&
-      requiredData.length ? (
+      columnData.length ? (
         <div
           style={{
             display: "flex",
