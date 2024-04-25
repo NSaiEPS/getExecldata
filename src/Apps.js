@@ -362,7 +362,8 @@ function App() {
               </button>
               {isComplete === 2 &&
               showDownload &&
-              requiredData.length + 1 === columnData.length ? (
+              // requiredData.length + 1 === columnData.length ? (
+              true ? (
                 <button
                   onClick={handleDownload}
                   style={{
@@ -391,8 +392,8 @@ function App() {
           {/* <Button type="primary" icon={<PoweroffOutlined />} loading={true} /> */}
         </div>
       }
-      {(isComplete === 1 || requiredData.length + 1 !== columnData.length) &&
-      columnData.length ? (
+      {/* {(isComplete === 1 || requiredData.length + 1 !== columnData.length) && */}
+      {isComplete === 1 && columnData.length ? (
         <div
           style={{
             display: "flex",
