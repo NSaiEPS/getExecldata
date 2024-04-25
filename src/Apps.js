@@ -26,7 +26,7 @@ function App() {
 
     timeout.current = setTimeout(() => {
       setShowDownload(true);
-    }, 1500);
+    }, 2500);
   };
 
   const fetchDataFromUrls = async () => {
