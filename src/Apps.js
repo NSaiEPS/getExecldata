@@ -61,7 +61,8 @@ function App() {
   };
 
   console.log(columnData.length, "pppppp");
-  console.log(requiredData.length, "pppppp");
+  let maxVal = Math.max(...requiredData.map((obj) => obj.No));
+  console.log(requiredData.length, maxVal, "pppppp");
 
   const getData = async (aRows, url, index) => {
     let SECRET_KEY = "UX8BMIBN";
@@ -174,7 +175,7 @@ function App() {
             return row[3];
           }
         });
-        // console.log("Data from third column:", columnData);
+        console.log("Data from third column:", columnData);
         setColumnData(columnData);
 
         // fetchDataFromUrls();
@@ -362,8 +363,8 @@ function App() {
               </button>
               {isComplete === 2 &&
               showDownload &&
-              // requiredData.length + 1 === columnData.length ? (
-              true ? (
+              requiredData.length === maxVal ? (
+                // true ? (
                 <button
                   onClick={handleDownload}
                   style={{
