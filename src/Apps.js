@@ -43,6 +43,7 @@ function App() {
 
   const getDataFromUrl = async (url, index) => {
     try {
+      // if (true) {
       if (url) {
         let SECRET_KEY = "UX8BMIBN";
 
@@ -54,6 +55,8 @@ function App() {
         const competitorsData = await response.json();
         getData(competitorsData, url, index);
         // console.log(competitorsData, "competitorsData");
+      } else {
+        console.log(index, "noindexforThis");
       }
     } catch (error) {
       console.error(`Error fetching domain for ${url}:`, error);
@@ -62,7 +65,7 @@ function App() {
 
   console.log(columnData.length, "pppppp");
   let maxVal = Math.max(...requiredData.map((obj) => obj.No));
-  console.log(requiredData.length, maxVal, "pppppp");
+  console.log(requiredData.length, maxVal, requiredData, "pppppp");
 
   const getData = async (aRows, url, index) => {
     let SECRET_KEY = "UX8BMIBN";
@@ -222,6 +225,19 @@ function App() {
   };
 
   const inputRef = useRef(null);
+
+  // const getDownloadCondition = () => {
+  //   if (maxVal - requiredData.length <= 10) {
+  //     setIsComplete(1);
+  //     setTimeout(() => {
+  //       setIsComplete(2);
+
+  //       return true;
+  //     }, 4000);
+  //   } else {
+  //     return false;
+  //   }
+  // };
   return (
     <>
       {
@@ -363,6 +379,7 @@ function App() {
               </button>
               {isComplete === 2 &&
               showDownload &&
+              // (requiredData.length === maxVal || getDownloadCondition()) ? (
               requiredData.length === maxVal ? (
                 // true ? (
                 <button
