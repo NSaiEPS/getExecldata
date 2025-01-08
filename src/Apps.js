@@ -131,7 +131,7 @@ function App() {
           : 0,
         competitor_name: aCometitor[0]?.competitor_name
           ? aCometitor[0]?.competitor_name
-          : mainSite,
+          : "",
       };
 
       // console.log(mainDomainData, "aCometitor");
