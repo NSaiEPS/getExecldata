@@ -105,7 +105,7 @@ function App() {
             competitorData.organic_domain_ranking === 0
           ) {
             const competitorObject = {
-              competitor_name: mainSite,
+              competitor_name: mainSite ?? "",
               competitor_traffic: competitorData?.organic_clicks_per_month
                 ? competitorData?.organic_clicks_per_month
                 : 0,
